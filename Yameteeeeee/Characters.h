@@ -35,7 +35,12 @@ public:
 		return *this;
 	};
 	Character& operator=(Character& other) = delete;
-
+	const char* get_name(){
+		return name;
+	}
+	SDL_Color get_color(){
+		return color;
+	}
 	void Appear() {
 		image.Load();
 	}
