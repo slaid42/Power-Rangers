@@ -35,9 +35,7 @@ public:
 		return *this;
 	};
 	Character& operator=(Character& other) = delete;
-	void Speak(const char* replic) {
-		Game_text(replic);
-	}
+
 	void Appear() {
 		image.Load();
 	}
