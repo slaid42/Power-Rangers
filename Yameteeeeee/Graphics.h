@@ -1,5 +1,5 @@
 #pragma once
-class Image// класс картинки
+class Image// ГЄГ«Г Г±Г± ГЄГ Г°ГІГЁГ­ГЄГЁ
 {
 private:
 	SDL_Surface* surf;
@@ -8,11 +8,32 @@ private:
 	char* directive;
 	char* key;
 public:
-
-	Image(char* key, char* dir, int x_a, int y_a, int w, int h) : key(key), directive(dir),
-		x(x_a), y(y_a), w(w), h(h)
+	Image() {
+		surf = nullptr;
+		x = 0;
+		y = 0;
+		directive = nullptr;
+		key = nullptr;
+	}
+	Image(char* key, char* dir, int x_a, int y_a) : key(key), directive(dir),
+		x(x_a), y(y_a)
 	{
 
+	}
+	Image* operator=(const Image& other) {
+		surf = other.surf;
+		x = other.x;
+		y = other.y;
+		directive = other.directive;
+		key = other.key;
+	}
+	Image* operator=(Image& other) {
+		surf = other.surf;
+		x = other.x;
+		y = other.y;
+		directive = other.directive;
+		key = other.key;
+		other.surf = nullptr;
 	}
 	void Load()
 	{
