@@ -20,6 +20,7 @@ public:
 	{
 
 	}
+	
 	Image* operator=(const Image& other) {
 		surf = other.surf;
 		x = other.x;
@@ -50,6 +51,12 @@ public:
 	int get_y()
 	{
 		return y;
+	}
+	void Disappear() {
+		if (surf != nullptr)
+		{
+			delete surf;
+		}
 	}
 	~Image()
 	{
