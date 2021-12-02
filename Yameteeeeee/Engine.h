@@ -1,5 +1,13 @@
 
-class Engine//движок реализует эпизоды и сцены, обрабатыввает события
+#include "Render.h"
+#include "SDL.h"
+#include <vector>
+#include <string>
+#include "Episode.h"
+#include "Scene.h"
+
+
+class Engine//Г¤ГўГЁГ¦Г®ГЄ Г°ГҐГ Г«ГЁГ§ГіГҐГІ ГЅГЇГЁГ§Г®Г¤Г» ГЁ Г±Г¶ГҐГ­Г», Г®ГЎГ°Г ГЎГ ГІГ»ГўГўГ ГҐГІ Г±Г®ГЎГ»ГІГЁГї
 {
 private:
 
@@ -7,19 +15,27 @@ private:
 	SDL_Window* window;
 	SDL_Surface* wind_surf;
 	SDL_Renderer* sdl_renderer;
-	std::vector<Episode*> episode_holder;//тут храним эпизоды
+	std::vector<Episode*> episode_holder;//ГІГіГІ ГµГ°Г Г­ГЁГ¬ ГЅГЇГЁГ§Г®Г¤Г»
 	Renderer* renderer;
 
 public:
 	Engine(SDL_Window* window_a, SDL_Renderer* render_a, Renderer* renderer_a);
+	
+	Engine(const Engine& eng) = delete;
 
-	Scene* Hold_Scene(Scene* curr_scene);//реализация сцены
+	Engine(Engine& eng) = delete;
 
-	Episode* Hold_Episode(Episode* curr_episode);//реализация эпизода
+	Engine& operator=(const Engine& eng) = delete;
 
-	Episode* New_episode(const char* name_a);//добавление эпизода
+	Engine& operator= (Engine& eng) = delete;
 
-	void Start()//старт игры
+	Scene* Hold_Scene(Scene* curr_scene);//Г°ГҐГ Г«ГЁГ§Г Г¶ГЁГї Г±Г¶ГҐГ­Г»
+
+	Episode* Hold_Episode(Episode* curr_episode);//Г°ГҐГ Г«ГЁГ§Г Г¶ГЁГї ГЅГЇГЁГ§Г®Г¤Г 
+
+	Episode* New_episode(const char* name_a);//Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГҐ ГЅГЇГЁГ§Г®Г¤Г 
+
+	void Start()//Г±ГІГ Г°ГІ ГЁГЈГ°Г»
 	{
 		Hold_Episode((*episode_holder.begin()));
 	}
@@ -49,7 +65,7 @@ Episode* Engine::Hold_Episode(Episode* curr_episode)
 {
 	for(auto scene_iter = curr_episode->scene_v.begin(); scene_iter != curr_episode->scene_v.end(); ++scene_iter)
 	{ 
-		Hold_Scene(*scene_iter);//пока што вызываем все сцены по очереди из списка сцен эпизода
+		Hold_Scene(*scene_iter);//ГЇГ®ГЄГ  ГёГІГ® ГўГ»Г§Г»ГўГ ГҐГ¬ ГўГ±ГҐ Г±Г¶ГҐГ­Г» ГЇГ® Г®Г·ГҐГ°ГҐГ¤ГЁ ГЁГ§ Г±ГЇГЁГ±ГЄГ  Г±Г¶ГҐГ­ ГЅГЇГЁГ§Г®Г¤Г 
 	}
 	return curr_episode->next_episode;
 }
@@ -62,13 +78,13 @@ Scene* Engine::Hold_Scene(Scene* curr_scene)
 	{
 		if ((*it) != nullptr)
 		{
-			(*it)->Load();//загружаем картинки, объявленные в сцене
+			(*it)->Load();//Г§Г ГЈГ°ГіГ¦Г ГҐГ¬ ГЄГ Г°ГІГЁГ­ГЄГЁ, Г®ГЎГєГїГўГ«ГҐГ­Г­Г»ГҐ Гў Г±Г¶ГҐГ­ГҐ
 		}
 	}
 
 	bool on_work = true;
 	bool quit = false;
-	while (on_work)// блок обработки событий
+	while (on_work)// ГЎГ«Г®ГЄ Г®ГЎГ°Г ГЎГ®ГІГЄГЁ Г±Г®ГЎГ»ГІГЁГ©
 	{
 		while (SDL_PollEvent(&game_event) != 0)
 		{
@@ -80,12 +96,12 @@ Scene* Engine::Hold_Scene(Scene* curr_scene)
 			}
 
 		}
-		renderer->Update(wind_surf, sdl_renderer, curr_scene->get_scene_images());// рендер обновляет экран
+		renderer->Update(wind_surf, sdl_renderer, curr_scene->get_scene_images());// Г°ГҐГ­Г¤ГҐГ° Г®ГЎГ­Г®ГўГ«ГїГҐГІ ГЅГЄГ°Г Г­
 	}
 
 
 	if (quit)
-	{   //утечка памяти
+	{   //ГіГІГҐГ·ГЄГ  ГЇГ Г¬ГїГІГЁ
 		SDL_DestroyRenderer(sdl_renderer);
 		SDL_DestroyWindow(window);
 		SDL_Quit();
