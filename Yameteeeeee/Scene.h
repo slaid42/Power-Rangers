@@ -1,4 +1,7 @@
 #pragma once
+#include <vector>
+#include "Graphics.h"
+
 class Scene
 {
 private:
