@@ -1,8 +1,16 @@
+#pragma once
+#include <SDL.h>
+#include <vector>
+#include "Graphics.h"
 
-
-class Renderer// рендер отрисовывает все што находится на экране
+class Renderer// Г°ГҐГ­Г¤ГҐГ° Г®ГІГ°ГЁГ±Г®ГўГ»ГўГ ГҐГІ ГўГ±ГҐ ГёГІГ® Г­Г ГµГ®Г¤ГЁГІГ±Гї Г­Г  ГЅГЄГ°Г Г­ГҐ
 {
 public:
+	Renderer() = default;
+	Renderer(const Renderer* rend) = delete;
+	Renderer(Renderer* rend) = delete;
+	Renderer& operator=(const Renderer* rend) = delete;
+	Renderer& operator=(Renderer* rend) = delete;
 	void Draw(SDL_Surface* img, int x, int y, SDL_Surface* screen) const
 	{
 		SDL_Rect dest;
