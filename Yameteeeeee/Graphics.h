@@ -1,4 +1,9 @@
 #pragma once
+#include <iostream>
+#include <SDL2/SDL.h>
+#include <SDL_timer.h>
+#include <SDL_image.h>
+#include "SDL_ttf.h"
 class Image// êëàññ êàðòèíêè
 {
 private:
@@ -71,24 +76,24 @@ public:
 class Game_text : public Image
 {
 private:
-	SDL_Surface* surf;
+
 	int x, y;
 	int w, h;
-	char* directive;
 	char* key;
+	SDL_Surface* surf;
 
 public:
+
 	Game_text() {
 		surf = nullptr;
 		x = 0;
 		y = 0;
 		w = 0;
 		h = 0;
-		directive = nullptr;
 		key = nullptr;
 	}
-	Game_text(char* key, char* dir, int x_a, int y_a, int w, int h, SDL_Color col, char* text) : key(key), directive(dir),
-		x(x_a), y(y_a), w(w), h(h)
+	Game_text(char* key, int x_a, int y_a, int w, int h, SDL_Color col, char* text, SDL_Surface* surf) : key(key),
+		x(x_a), y(y_a), w(w), h(h), surf(surf)
 	{
 
 	}
@@ -99,7 +104,6 @@ public:
 		y = other.y;
 		w = other.w;
 		h = other.h;
-		directive = other.directive;
 		key = other.key;
 	}
 	Game_text* operator=(Game_text& other) {
@@ -108,8 +112,6 @@ public:
 		y = other.y;
 		w = other.w;
 		h = other.h;
-		col = other.col;
-		directive = other.directive;
 		key = other.key;
 		other.surf = nullptr;
 	}
