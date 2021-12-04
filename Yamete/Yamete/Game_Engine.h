@@ -31,12 +31,11 @@ public:
 
 	Episode* New_episode(const char* name_a);//добавление эпизода
 
+	void Action_Holder(Scene* curr_scene);
 
 
 	void Start();
 
-
-	void Action_Holder(Scene* scene);
 
 
 	~Game_Engine();
@@ -72,6 +71,10 @@ void Game_Engine::Start()//старт игры
 		{
 			curr_scene = Hold_Scene(curr_episode, curr_scene);
 		}
+	}
+	else
+	{
+		std::cerr << "engine don't have episodes to run";
 	}
 
 }
@@ -128,13 +131,37 @@ Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 		}
 	}
 
+	Action_Holder(curr_scene);
+
+
+	if (!quit)
+	{
+		std::cout << "next scene: " << curr_scene->get_next_scene()->get_name() << "\n";
+	}
+
+
+	curr_scene->change_alp(curr_scene->actions.end());
+	return curr_scene->get_next_scene();
+
+
+}
+
+
+void Game_Engine::Action_Holder(Scene* curr_scene)
+{
+
 	on_work = true;// пока переменная тру, будет происходить обработка action
 	end_scene = false;// пока переменная фолс, будет происходить обработка сцены
 
-	for (auto it = curr_scene->get_actions().begin(); it != curr_scene->get_actions().end(); it++)
+	for (auto it = curr_scene->get_actions().begin(); it != curr_scene->get_actions().end(); ++it)
 	{	// реализовываем все action до тех пор пока они не кончатся или не сработает next_scene
+
+			curr_scene->change_alp(++it);
+			--it;
+
 		if (!end_scene)
 		{
+			on_work = true;
 			while (on_work)// блок обработки событий
 			{
 				while (SDL_PollEvent(&game_event) != 0)
@@ -152,9 +179,13 @@ Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 						if (inst.get_command() == "stop_scene")
 						{
 							end_scene = true;
+							on_work = false;
+						}
+						if (inst.get_command() == "continue")
+						{
+							on_work = false;
 						}
 
-						on_work = false;
 					}
 				}
 
@@ -162,14 +193,12 @@ Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 			}
 		}
 		else
-		{
+		{	
+
 			break;
 		}
 	}
-	std::cout << "next scene: " << curr_scene->get_next_scene()->get_name() << "\n";
-	return curr_scene->get_next_scene();
 }
-
 
 Game_Engine::~Game_Engine()
 {

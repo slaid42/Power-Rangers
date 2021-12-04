@@ -6,6 +6,7 @@ class EngineInstruction
 {
 private:
 	const char* command;
+
 public:
 	EngineInstruction(const char* comm) : command(comm) {}
 
@@ -21,8 +22,11 @@ class Action
 private:
 	std::function<EngineInstruction(Characters& , ValuesHolder& , Scene* , SDL_Event)> action;
 	SDL_EventType trigger;
+	std::list<Action>::iterator list_pos;
+
 public:
-	Action(SDL_EventType trigger_a,std::function<EngineInstruction(Characters&, ValuesHolder&, Scene*, SDL_Event)> action_a = [](Characters& a, ValuesHolder& b, Scene* c, SDL_Event d) -> EngineInstruction {}) : action(action_a), trigger(trigger_a) {}
+	Action(SDL_EventType trigger_a,  std::function<EngineInstruction(Characters&, ValuesHolder&, Scene*, SDL_Event)> action_a = [](Characters& a, ValuesHolder& b, Scene* c, SDL_Event d) -> EngineInstruction {})
+		: action(action_a), trigger(trigger_a) {}
 		 
 	
 	SDL_EventType get_trigger()

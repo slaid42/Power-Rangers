@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <functional>
+#include <cassert>
 
 #include <list>
 #include <map>
@@ -68,5 +69,17 @@ void GameProcess(Game_Engine* engine)
 {
     Episode* ep0 = engine->New_episode("ep0");
     Scene* sc1 = ep0->Add_scene("sc1");
+    sc1->Add_Clicker();
+    sc1->Add_Clicker();
+    sc1->Add_Clicker();
+    Scene* sc2 = ep0->Add_scene("sc2");
+    sc2->Add_Clicker();
+    Scene* sc3 = ep0->Add_scene("sc3");
+    sc1->Next_Scene(sc2);
+    sc2->Next_Scene(sc3);
 
+    Scene* sc4 = ep0->Add_scene("sc4");
+    Scene* sc5 = ep0->Add_scene("sc5");
+
+    sc3->Add_Choice(sc4, sc5);
 }

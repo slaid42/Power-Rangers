@@ -1,3 +1,3 @@
 ﻿  Yamete.cpp
-C:\Users\dege-\Power-Rangers\Yamete\Yamete\Game_Engine.h(110): warning C4715: Game_Engine::Hold_Episode: значение возвращается не при всех путях выполнения
+C:\Users\dege-\Power-Rangers\Yamete\Yamete\Game_Engine.h(113): warning C4715: Game_Engine::Hold_Episode: значение возвращается не при всех путях выполнения
   Yamete.vcxproj -> C:\Users\dege-\Power-Rangers\Yamete\x64\Debug\Yamete.exe
