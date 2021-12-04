@@ -62,7 +62,7 @@ void Scene::Create_text(char* id_name, char* content, const char* font, int size
 void Scene::Add_text(char* id_name, char* direction, int x_a, int y_a, int w, int h)
 {
 
-	scene_images.push_back(new Game_text(id_name, direction, x_a, y_a, w, h));
+	scene_texts.push_back(new Game_text(id_name, direction, x_a, y_a, w, h));
 }
 
 void Scene::Add_image(char* id_name, char* direction, int x_a, int y_a, int w, int h)
