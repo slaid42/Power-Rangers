@@ -78,7 +78,20 @@ private:
 	char* key;
 	char* text;
 };
-class Audio
-{
-
+class Audio{
+private:
+	Mix_Music* music;
+public:
+	Audio(const char* directive) {
+		music = Mix_LoadMUS(directive);
+	}
+	Audio() {
+		music = nullptr;
+	}
+	Audio& operator= (const char* directive) {
+		music = Mix_LoadMUS(directive);
+	}
+	void Play() {
+		Mix_PlayMusic(music, -1);
+	}
 };
