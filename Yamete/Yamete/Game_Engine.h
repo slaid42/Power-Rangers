@@ -1,4 +1,8 @@
 
+
+
+
+
 class Game_Engine//движок реализует эпизоды и сцены, обрабатыввает события
 {
 private:
@@ -7,43 +11,42 @@ private:
 	SDL_Window* window;
 	SDL_Surface* wind_surf;
 	SDL_Renderer* sdl_renderer;
+	Characters characters;
+	ValuesHolder values_holder;
 	std::list<Episode*> episode_holder;//тут храним эпизоды
 	Renderer* renderer;
 	bool quit;
+	bool on_work;
+	bool end_scene;
 
 public:
+	friend EngineInstruction;
+
+
 	Game_Engine(SDL_Window* window_a, SDL_Renderer* render_a, Renderer* renderer_a);
 
-	Scene* Hold_Scene(Scene* curr_scene);//реализация сцены
+	Scene* Hold_Scene(Episode* cur_episode, Scene* curr_scene);//реализация сцены
 
 	Episode* Hold_Episode(Episode* curr_episode);//реализация эпизода
 
 	Episode* New_episode(const char* name_a);//добавление эпизода
 
-	void Start()//старт игры
-	{
 
-		if (episode_holder.size() != 0 && *episode_holder.begin() != nullptr)
-		{
-			Episode * curr_episode = Hold_Episode(*episode_holder.begin());
-			while (curr_episode)
-			{
-				curr_episode = Hold_Episode(curr_episode);
-			}
-		}
-	}
+
+	void Start();
+
 
 	void Action_Holder(Scene* scene);
 
 
-
+	~Game_Engine();
 
 };
 
 
 Game_Engine::Game_Engine(SDL_Window* window_a, SDL_Renderer* render_a, Renderer* renderer_a) :
 	window(window_a), sdl_renderer(render_a), renderer(renderer_a),
-	game_event(), episode_holder(), wind_surf(SDL_GetWindowSurface(window)), quit(false) {}
+	game_event(), episode_holder(), wind_surf(SDL_GetWindowSurface(window)), quit(false), on_work(false),end_scene(false) {}
 
 
 
@@ -54,6 +57,24 @@ Episode* Game_Engine::New_episode(const char* name_a)
 	return helper;
 }
 
+
+void Game_Engine::Start()//старт игры
+{
+
+	if (episode_holder.size() != 0 && *episode_holder.begin() != nullptr)
+	{
+		Episode* curr_episode = *episode_holder.begin();//начинаем с первого эпизода в списке эпизодов
+		Scene* null_scene = curr_episode->Add_scene("null_scene");// добавляем нулевую сцену, на которую по дефолту ссылаются все сцены
+
+		Scene* curr_scene = *curr_episode->get_scene_v()->begin();//начинаем с первой сцены первого эпизода
+
+		while (!quit)//пока пользователь не выйдет из игры будем вызывать обработчик сцены
+		{
+			curr_scene = Hold_Scene(curr_episode, curr_scene);
+		}
+	}
+
+}
 Episode* Game_Engine::Hold_Episode(Episode *curr_episode)
 {
 	if (curr_episode)
@@ -65,7 +86,7 @@ Episode* Game_Engine::Hold_Episode(Episode *curr_episode)
 			{
 				if (*scene_iter)
 				{
-					Hold_Scene(*scene_iter);//пока што вызываем все сцены по очереди из списка сцен эпизода
+					Hold_Scene(curr_episode, *scene_iter);//пока што вызываем все сцены по очереди из списка сцен эпизода
 				}
 				if (quit)
 				{
@@ -90,10 +111,12 @@ Episode* Game_Engine::Hold_Episode(Episode *curr_episode)
 
 
 
-Scene* Game_Engine::Hold_Scene(Scene* curr_scene)
-{	
-	if (!curr_scene) { return 0; }
-	std::cout << curr_scene->get_name() << " is on action" << "\n";
+Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
+{
+	if (!curr_scene) { return 0; }// проверяем што указатель не сломан
+	std::cout << curr_scene->get_name() << " is on action" << "\n";//выводим название воспроизводимой сцены
+	curr_scene->Next_Scene(*(--curr_episode->get_scene_v()->end()));// добавляем дефолтный указатель на следующую сцену
+
 	if (curr_scene->get_scene_images().size() != 0)
 	{
 		for (auto it = curr_scene->get_scene_images().begin(); it != curr_scene->get_scene_images().end(); ++it)
@@ -105,27 +128,53 @@ Scene* Game_Engine::Hold_Scene(Scene* curr_scene)
 		}
 	}
 
-	bool on_work = true;
-	while (on_work)// блок обработки событий
-	{
-		while (SDL_PollEvent(&game_event) != 0)
+	on_work = true;// пока переменная тру, будет происходить обработка action
+	end_scene = false;// пока переменная фолс, будет происходить обработка сцены
+
+	for (auto it = curr_scene->get_actions().begin(); it != curr_scene->get_actions().end(); it++)
+	{	// реализовываем все action до тех пор пока они не кончатся или не сработает next_scene
+		if (!end_scene)
 		{
-			if (game_event.type == SDL_QUIT)
+			while (on_work)// блок обработки событий
 			{
-				on_work = false;
-				quit = true;
-				break;
-			}
-			if (game_event.type == SDL_MOUSEBUTTONDOWN)
-			{
-				on_work = false;
+				while (SDL_PollEvent(&game_event) != 0)
+				{
+					if (game_event.type == SDL_QUIT)
+					{
+						on_work = false;
+						end_scene = true;
+						quit = true;
+						break;
+					}
+					if (game_event.type == (*it).get_trigger())
+					{
+						EngineInstruction inst = (*it).do_action(characters, values_holder, curr_scene, game_event);
+						if (inst.get_command() == "stop_scene")
+						{
+							end_scene = true;
+						}
+
+						on_work = false;
+					}
+				}
+
+				renderer->Update(wind_surf, sdl_renderer, curr_scene->get_scene_images());// рендер обновляет экран
 			}
 		}
-
-		renderer->Update(wind_surf, sdl_renderer, curr_scene->get_scene_images());// рендер обновляет экран
+		else
+		{
+			break;
+		}
 	}
+	std::cout << "next scene: " << curr_scene->get_next_scene()->get_name() << "\n";
+	return curr_scene->get_next_scene();
+}
 
 
-	return 0;
-	
+Game_Engine::~Game_Engine()
+{
+	for (auto it = episode_holder.begin(); it != episode_holder.end(); ++it)
+	{
+		delete *it;
+	}
 }

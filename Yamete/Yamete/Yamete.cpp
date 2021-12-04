@@ -68,8 +68,5 @@ void GameProcess(Game_Engine* engine)
 {
     Episode* ep0 = engine->New_episode("ep0");
     Scene* sc1 = ep0->Add_scene("sc1");
-    Scene* sc2 = ep0->Add_scene("sc2");
-    Episode* ep1 = engine->New_episode("ep1");
-    Scene* sc1_1 = ep1->Add_scene("sc1_1");
-    ep0->Next_episode(ep1);
+
 }

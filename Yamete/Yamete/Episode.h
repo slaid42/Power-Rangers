@@ -29,7 +29,7 @@ public:
 		return next_episode;
 	}
 
-	
+	~Episode();
 };
 
 
@@ -45,4 +45,12 @@ Scene* Episode::Add_scene( const char* name)
 	Scene* helper = new Scene(name);
 	scene_v.push_back(helper);
 	return helper;
+}
+
+Episode::~Episode()
+{
+	for (auto it = scene_v.begin(); it != scene_v.end(); ++it)
+	{
+		delete *it;
+	}
 }
