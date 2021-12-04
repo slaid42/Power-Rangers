@@ -3,14 +3,10 @@ class Scene
 {
 private:
 
-	
-
-
 	std::vector<Image*> scene_images;
 	std::vector<Game_text> scene_texts;
 	std::vector<Action> actions;
 	Scene* next_scene;
-	Audio music;
 	const char* name;
 
 public:
@@ -62,9 +58,15 @@ public:
 
 
 Scene::Scene(const char* name_a): name(name_a), scene_images(), scene_texts(), next_scene(nullptr) {}
-
-void Scene::Add_image(char* id_name, char* direction, int x_a, int y_a)
+void Scene::Add_image(Image* im)
 {
-	
-	scene_images.push_back(new Image(id_name, direction, x_a, y_a));
+
+	scene_images.push_back(im);
+}
+
+
+void Scene::Add_text(Game_text text)
+{
+
+	scene_texts.push_back(text);
 }
