@@ -20,7 +20,7 @@ public:
 	{
 
 	}
-	
+
 	Image* operator=(const Image& other) {
 		surf = other.surf;
 		x = other.x;
@@ -68,7 +68,7 @@ public:
 
 
 };
-class Game_text
+class Game_text : public Image
 {
 private:
 	SDL_Surface* surf;
@@ -76,8 +76,56 @@ private:
 	int w, h;
 	char* directive;
 	char* key;
-	char* text;
+
+public:
+	Game_text() {
+		surf = nullptr;
+		x = 0;
+		y = 0;
+		w = 0;
+		h = 0;
+		directive = nullptr;
+		key = nullptr;
+	}
+	Game_text(char* key, char* dir, int x_a, int y_a, int w, int h, SDL_Color col, char* text) : key(key), directive(dir),
+		x(x_a), y(y_a), w(w), h(h)
+	{
+
+	}
+
+	Game_text* operator=(const Game_text& other) {
+		surf = other.surf;
+		x = other.x;
+		y = other.y;
+		w = other.w;
+		h = other.h;
+		directive = other.directive;
+		key = other.key;
+	}
+	Game_text* operator=(Game_text& other) {
+		surf = other.surf;
+		x = other.x;
+		y = other.y;
+		w = other.w;
+		h = other.h;
+		col = other.col;
+		directive = other.directive;
+		key = other.key;
+		other.surf = nullptr;
+	}
+
+	~Game_text()
+	{
+		if (surf != nullptr)
+		{
+			delete surf;
+		}
+	}
+
+
 };
+
+
 class Audio{
 private:
 	Mix_Music* music;
