@@ -1,32 +1,109 @@
 #pragma once
+
+class Episode;
 class Scene
 {
 private:
 
 	std::vector<Image*> scene_images;
-	std::vector<Game_text> scene_texts;
-	std::vector<Action> actions;
+	std::vector<Game_text*> scene_texts;
+	std::list<Action> actions;
+	std::list<Action>::iterator action_list_pos;
+	Episode* my_episode;
 	Scene* next_scene;
 	Audio music;
 	const char* name;
 
-public:
-	Scene(const char* name_a);
+	void change_alp(std::list<Action>::iterator arg)
+	{
+		action_list_pos = arg;
+	}
 
-	void Add_image(char* id_name, char* direction, int x_a, int y_a);
-	void Add_text(char* id_name, char* content);
-	void Add_Choice(Scene* sc1, Scene* sc2);
-	void Add_Action(std::function<void(Characters&, ValuesHolder&)> action);
+	void change_my_episode(Episode* epi)
+	{
+		my_episode = epi;
+
+
+	}
+
+public:
+
+	friend Game_Engine;
+	friend Episode;
+
+	Scene(const char* name_a);
+	void Add_image(char* id_name, char* direction, int& x_a, int& y_a, int& w, int& h);
+    void Add_Background(char* id_name, char* direction, int screen_w, int screen_h);
+	void Add_text(SDL_Surface* screen, const char* content, const char* font, int& siz, SDL_Color color, int& x, int& y, int& w, int& h, int& screen_w);
+
+	std::list<Action>::iterator get_alp()
+	{
+		return action_list_pos;
+	}
+
+	void Add_Action(SDL_EventType event_type, std::function<EngineInstruction(ActionValues& act_val)> action_arg)
+	{
+		Action action(event_type, action_arg);
+		push_action(action);
+	}
+	void Add_Script(std::function<EngineInstruction(ActionValues& act_val)> scr)
+	{
+		Action action(NULL_EVENT.type, scr);
+		push_action(action);
+	}
+
+	void push_action(Action& action)
+	{
+		if (actions.size() < 1)
+		{
+			actions.push_back(action);
+		}
+		else
+		{
+			actions.emplace(action_list_pos, action);
+		}
+	}
 
 	void Next_Scene(Scene* next_scene_arg)
 	{
 
-		Action action(SDL_MOUSEBUTTONDOWN, [next_scene_arg](Characters& ch, ValuesHolder& vh, Scene* scene, SDL_Event eventt) -> EngineInstruction
+		Action action(NULL_EVENT.type,[next_scene_arg](ActionValues& act_val) -> EngineInstruction
 			{
-				scene->Next_Scene(next_scene_arg, "slyshen_krik_na_vsy_dolgopy");
+				act_val.this_scene->Next_Scene(next_scene_arg, "slyshen_krik_na_vsy_dolgopy");
 				return EngineInstruction("stop_scene");
 			});
-		actions.push_back(action);
+		push_action(action);
+
+	}
+
+
+	void Add_Clicker()
+	{
+		Action action(SDL_MOUSEBUTTONDOWN, [](ActionValues& act_val)-> EngineInstruction
+			{
+				return EngineInstruction("continue");
+				//усё, кликер ничего не делает
+			});
+		push_action(action);
+	}
+
+	void Add_Choice(Scene* sc1, Scene* sc2)
+	{
+		Action action(SDL_MOUSEBUTTONDOWN, [sc1, sc2](ActionValues& act_val)-> EngineInstruction
+			{
+				if (act_val.event.button.button == SDL_BUTTON_LEFT)
+				{
+					act_val.this_scene->Next_Scene(sc1);
+					return EngineInstruction("continue");
+				}
+				if (act_val.event.button.button == SDL_BUTTON_RIGHT)
+				{
+					act_val.this_scene->Next_Scene(sc2);
+					return EngineInstruction("continue");
+				}
+				return EngineInstruction("nothing");
+			});
+		push_action(action);
 	}
 
 	void Next_Scene(Scene* scene, const char* password)
@@ -41,7 +118,7 @@ public:
 	{
 		return name;
 	}
-	std::vector<Action>& get_actions()
+	std::list<Action>& get_actions()
 	{
 		return actions;
 	}
@@ -54,14 +131,44 @@ public:
 		return scene_images;
 	}
 
-
+	Episode* get_my_episode()
+	{
+		return my_episode;
+	}
 };
 
 
-Scene::Scene(const char* name_a): name(name_a), scene_images(), scene_texts(), next_scene(nullptr) {}
+Scene::Scene(const char* name_a): name(name_a), scene_images(), scene_texts(), next_scene(nullptr), actions (), action_list_pos()
+{
+	action_list_pos = actions.end();
+}
 
-void Scene::Add_image(char* id_name, char* direction, int x_a, int y_a)
+
+void Scene::Add_Background(char* id_name, char* direction, int screen_w, int screen_h){
+    scene_images.push_back(new Image(id_name, direction, 0, 0, screen_w, screen_h));
+}
+
+void Scene::Add_text(SDL_Surface* screen ,const char* content, const char* font, int& siz, SDL_Color color, int& x, int& y, int& w, int& h, int& screen_w){
+    std::string s(content);
+    SDL_Surface* sDest;
+    for(uint16_t i=0; i <= s.size()*siz/screen_w; i++){
+        char* text = CharSlipt(content, i*screen_w, (1+i)*screen_w);
+        TTF_Font *fnt = TTF_OpenFont(font, siz);
+        SDL_Surface *sText = TTF_RenderText_Blended(fnt, text, color);
+        SDL_Rect dest;
+        dest.w = w;
+        dest.h = h;
+        dest.x = x;
+        dest.y = y;
+        SDL_BlitSurface( sText, NULL, sDest, &dest );
+        y+=siz;
+    }
+    char* id_name;
+    scene_texts.push_back(new Game_text(id_name, x, y, w, h, sDest));
+}
+
+void Scene::Add_image(char* id_name, char* direction, int& x_a, int& y_a, int& w, int& h)
 {
 
-	scene_images.push_back(new Image(id_name, direction, x_a, y_a));
+	scene_images.push_back(new Image(id_name, direction, x_a, y_a, w, h));
 }

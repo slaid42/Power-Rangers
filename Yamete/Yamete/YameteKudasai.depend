@@ -1,0 +1,39 @@
+# depslib dependency file v1.0
+1638984801 source:c:\sdl2\yametekudasai\main.cpp
+	<iostream>
+	<functional>
+	<list>
+	<map>
+	<vector>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_ttf.h>
+	<SDL_mixer.h>
+	"Options.h"
+	"Graphics.h"
+	"Values_holder.h"
+	"Characters.h"
+	"Action.h"
+	"scene.h"
+	"Episode.h"
+	"Renderer.h"
+	"Game_Engine.h"
+
+1638985373 c:\sdl2\yametekudasai\options.h
+
+1638984995 c:\sdl2\yametekudasai\graphics.h
+
+1638985373 c:\sdl2\yametekudasai\values_holder.h
+
+1638985373 c:\sdl2\yametekudasai\characters.h
+
+1638985373 c:\sdl2\yametekudasai\action.h
+
+1638984021 c:\sdl2\yametekudasai\scene.h
+
+1638985373 c:\sdl2\yametekudasai\episode.h
+
+1638985373 c:\sdl2\yametekudasai\renderer.h
+
+1638985373 c:\sdl2\yametekudasai\game_engine.h
+
