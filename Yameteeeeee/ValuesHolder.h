@@ -82,3 +82,21 @@ public:
 		m.erase(v_name);
 	}
 };
+class BoolHolder;
+class BoolHolder : public ValuesHolder<BoolHolder> {
+private:
+	std::map<const char*, bool> m;
+public:
+	void AddValue(const char* v_name, bool val) {
+		m.insert(std::make_pair(v_name, val));
+	}
+	bool FindValue(const char* v_name) {
+		return m[v_name];
+	}
+	void ChangeValue(const char* v_name, bool val) {
+		m[v_name] = val;
+	}
+	void DeleteValue(const char* v_name) {
+		m.erase(v_name);
+	}
+};
