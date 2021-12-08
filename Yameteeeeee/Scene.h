@@ -9,6 +9,15 @@
 #include <SDL_mixer.h>
 #include "SDL_ttf.h"
 
+
+void PrintText(SDL_Surface *sDest, const char* message, const char* font, int size, SDL_Color color, SDL_Rect dest){
+    TTF_Font *fnt = TTF_OpenFont(font, size);
+    SDL_Surface *sText = TTF_RenderText_Blended(fnt, message, color);
+    SDL_BlitSurface( sText, NULL, sDest, &dest );
+    SDL_FreeSurface( sText );
+    TTF_CloseFont(fnt);
+}
+
 int min(int l, int r) {
     if (l < r) {
         return l;
