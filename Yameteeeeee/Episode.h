@@ -1,17 +1,20 @@
+#include <list>
+#include "Episode.h"
+
 class Engine;
 
 class Episode
 {
 	
 private:
-	std::list<Scene*> scene_v;// вектор сцен, добавленных в эпизод
+	std::list<Scene*> scene_v;// ГўГҐГЄГІГ®Г° Г±Г¶ГҐГ­, Г¤Г®ГЎГ ГўГ«ГҐГ­Г­Г»Гµ Гў ГЅГЇГЁГ§Г®Г¤
 	const char* name;
-	Episode* next_episode;// ссылка на следующий эпизод
+	Episode* next_episode;// Г±Г±Г»Г«ГЄГ  Г­Г  Г±Г«ГҐГ¤ГіГѕГ№ГЁГ© ГЅГЇГЁГ§Г®Г¤
 public:
 	
 	Episode(const char* name_a);
-	void Next_episode(Episode* next_episode);// добавить ссылку на следующий эпизод
-	Scene* Add_scene(const char* name);//добавить новую сцену
+	void Next_episode(Episode* next_episode);// Г¤Г®ГЎГ ГўГЁГІГј Г±Г±Г»Г«ГЄГі Г­Г  Г±Г«ГҐГ¤ГіГѕГ№ГЁГ© ГЅГЇГЁГ§Г®Г¤
+	Scene* Add_scene(const char* name);//Г¤Г®ГЎГ ГўГЁГІГј Г­Г®ГўГіГѕ Г±Г¶ГҐГ­Гі
 
 
 	std::list<Scene*>* get_scene_v()
@@ -29,7 +32,7 @@ public:
 		return next_episode;
 	}
 
-	~Episode();
+	
 };
 
 
@@ -45,12 +48,4 @@ Scene* Episode::Add_scene( const char* name)
 	Scene* helper = new Scene(name);
 	scene_v.push_back(helper);
 	return helper;
-}
-
-Episode::~Episode()
-{
-	for (auto it = scene_v.begin(); it != scene_v.end(); ++it)
-	{
-		delete *it;
-	}
 }

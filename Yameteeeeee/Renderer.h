@@ -1,8 +1,16 @@
+#pragma once
+#include <SDL.h>
+#include <vector>
+#include "Graphics.h"
 
-
-class Renderer// рендер отрисовывает все што находится на экране
+class Renderer// Г°ГҐГ­Г¤ГҐГ° Г®ГІГ°ГЁГ±Г®ГўГ»ГўГ ГҐГІ ГўГ±ГҐ ГёГІГ® Г­Г ГµГ®Г¤ГЁГІГ±Гї Г­Г  ГЅГЄГ°Г Г­ГҐ
 {
 public:
+	Renderer() = default;
+	Renderer(const Renderer* rend) = delete;
+	Renderer(Renderer* rend) = delete;
+	Renderer& operator=(const Renderer* rend) = delete;
+	Renderer& operator=(Renderer* rend) = delete;
 	void Draw(SDL_Surface* img, int x, int y, SDL_Surface* screen) const
 	{
 		SDL_Rect dest;
@@ -13,15 +21,10 @@ public:
 	void Update(SDL_Surface* wind_surf, SDL_Renderer* rend, std::vector<Image*> Surfaces_on_act)
 	{
 		SDL_RenderClear(rend);
-		if (Surfaces_on_act.size() != 0)
+		for (auto it = Surfaces_on_act.begin(); it != Surfaces_on_act.end(); ++it)
 		{
-			for (auto it = Surfaces_on_act.begin(); it != Surfaces_on_act.end(); ++it)
-			{
-				if (*it)
-				{
-					Draw((*it)->get_surf(), (*it)->get_x(), (*it)->get_y(), wind_surf);
-				}
-			}
+			
+			Draw((*it)->get_surf(), (*it)->get_x(), (*it)->get_y(), wind_surf);
 		}
 		SDL_RenderPresent(rend);
 	}
