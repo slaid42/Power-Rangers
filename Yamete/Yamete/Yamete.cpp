@@ -28,7 +28,7 @@ const int WIDTH = 800, HEIGHT = 450;
 void GameProcess(Game_Engine* engine);// вместо инита 
 // эту функцию должен определить разраб и в ней он будет объявлять эпизоды и сцены, а также их настраивать
 // т.е по сути он будет кодить тут
-
+//ATTENTION : ФУНКЦИЯ МОЖЕТ БЫТЬ НЕ ОБЪЯВЛЕНА
 
 int main(int argc, char* argv[])
 {
@@ -52,6 +52,8 @@ int main(int argc, char* argv[])
 
     Renderer* renderer = new Renderer();// создаем рендерер
 
+    NULL_EVENT.type = SDL_RegisterEvents(1);
+
     Game_Engine g_engine(window, sdl_renderer, renderer);// создаем движок
 
     GameProcess(&g_engine);// вызываем код пользователя
@@ -69,17 +71,36 @@ void GameProcess(Game_Engine* engine)
 {
     Episode* ep0 = engine->New_episode("ep0");
     Scene* sc1 = ep0->Add_scene("sc1");
-    sc1->Add_Clicker();
-    sc1->Add_Clicker();
-    sc1->Add_Clicker();
     Scene* sc2 = ep0->Add_scene("sc2");
-    sc2->Add_Clicker();
     Scene* sc3 = ep0->Add_scene("sc3");
-    sc1->Next_Scene(sc2);
-    sc2->Next_Scene(sc3);
+
+    engine->values_holder.Add("sc3_has_been_seen", 0);
 
     Scene* sc4 = ep0->Add_scene("sc4");
-    Scene* sc5 = ep0->Add_scene("sc5");
 
-    sc3->Add_Choice(sc4, sc5);
+    sc1->Add_Choice(sc2, sc3);
+    sc2->Add_Script(
+        [sc1, sc4](ActionValues& val)->EngineInstruction
+        {
+            if (val.values_holder->Get("sc3_has_been_seen") == 0)
+            {
+                val.this_scene->Next_Scene(sc1);
+                return EngineInstruction("continue");
+            }
+            else
+            {
+                val.this_scene->Next_Scene(sc4);
+                return EngineInstruction("continue");
+            }
+        });
+
+    sc3->Add_Script(
+        [](ActionValues val)->EngineInstruction
+        {
+            val.values_holder->Change("sc3_has_been_seen", 1);
+            return EngineInstruction("continue");
+        }
+    );
+    sc3->Next_Scene(sc4);
+
 }

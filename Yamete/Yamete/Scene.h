@@ -24,17 +24,21 @@ public:
 
 	void Add_image(char* id_name, char* direction, int x_a, int y_a);
 	void Add_text(char* id_name, char* content);
-	void Add_Action(std::function<void(Characters&, ValuesHolder&)> action);
 
 	std::list<Action>::iterator get_alp()
 	{
 		return action_list_pos;
 	}
 
-
-	void Add_Action(std::function<EngineInstruction(Characters&, ValuesHolder&, Scene*, SDL_Event)>)
+	void Add_Action(SDL_EventType event_type, std::function<EngineInstruction(ActionValues& act_val)> action_arg)
 	{
-
+		Action action(event_type, action_arg);
+		push_action(action);
+	}
+	void Add_Script(std::function<EngineInstruction(ActionValues& act_val)> scr)
+	{
+		Action action(NULL_EVENT.type, scr);
+		push_action(action);
 	}
 
 	void push_action(Action& action)
@@ -52,9 +56,9 @@ public:
 	void Next_Scene(Scene* next_scene_arg)
 	{
 		
-		Action action(SDL_MOUSEBUTTONDOWN,[next_scene_arg](Characters& ch, ValuesHolder& vh, Scene* scene, SDL_Event eventt) -> EngineInstruction
+		Action action(NULL_EVENT.type,[next_scene_arg](ActionValues& act_val) -> EngineInstruction
 			{
-				scene->Next_Scene(next_scene_arg, "slyshen_krik_na_vsy_dolgopy");
+				act_val.this_scene->Next_Scene(next_scene_arg, "slyshen_krik_na_vsy_dolgopy");
 				return EngineInstruction("stop_scene");
 			});
 		push_action(action);
@@ -64,7 +68,7 @@ public:
 	
 	void Add_Clicker()
 	{
-		Action action(SDL_MOUSEBUTTONDOWN, [](Characters& ch, ValuesHolder& vh, Scene* scene, SDL_Event event)-> EngineInstruction
+		Action action(SDL_MOUSEBUTTONDOWN, [](ActionValues& act_val)-> EngineInstruction
 			{
 				return EngineInstruction("continue");
 				//усё, кликер ничего не делает
@@ -74,16 +78,16 @@ public:
 
 	void Add_Choice(Scene* sc1, Scene* sc2)
 	{
-		Action action(SDL_MOUSEBUTTONDOWN, [sc1, sc2](Characters& ch, ValuesHolder& vh, Scene* scene, SDL_Event event)-> EngineInstruction
+		Action action(SDL_MOUSEBUTTONDOWN, [sc1, sc2](ActionValues& act_val)-> EngineInstruction
 			{
-				if (event.button.button == SDL_BUTTON_LEFT)
+				if (act_val.event.button.button == SDL_BUTTON_LEFT)
 				{
-					scene->Next_Scene(sc1);
+					act_val.this_scene->Next_Scene(sc1);
 					return EngineInstruction("continue");
 				}
-				if (event.button.button == SDL_BUTTON_RIGHT)
+				if (act_val.event.button.button == SDL_BUTTON_RIGHT)
 				{
-					scene->Next_Scene(sc2);
+					act_val.this_scene->Next_Scene(sc2);
 					return EngineInstruction("continue");
 				}
 				return EngineInstruction("nothing");

@@ -11,29 +11,27 @@ private:
 	SDL_Window* window;
 	SDL_Surface* wind_surf;
 	SDL_Renderer* sdl_renderer;
-	Characters characters;
-	ValuesHolder values_holder;
 	std::list<Episode*> episode_holder;//тут храним эпизоды
 	Renderer* renderer;
 	bool quit;
 	bool on_work;
 	bool end_scene;
 
-public:
-	friend EngineInstruction;
-
-
-	Game_Engine(SDL_Window* window_a, SDL_Renderer* render_a, Renderer* renderer_a);
 
 	Scene* Hold_Scene(Episode* cur_episode, Scene* curr_scene);//реализация сцены
 
 	Episode* Hold_Episode(Episode* curr_episode);//реализация эпизода
 
-	Episode* New_episode(const char* name_a);//добавление эпизода
-
 	void Action_Holder(Scene* curr_scene);
+public:
+	friend EngineInstruction;
+
+	Characters characters;
+	ValuesHolder values_holder;
 
 
+	Game_Engine(SDL_Window* window_a, SDL_Renderer* render_a, Renderer* renderer_a);
+	Episode* New_episode(const char* name_a);//добавление эпизода
 	void Start();
 
 
@@ -45,7 +43,8 @@ public:
 
 Game_Engine::Game_Engine(SDL_Window* window_a, SDL_Renderer* render_a, Renderer* renderer_a) :
 	window(window_a), sdl_renderer(render_a), renderer(renderer_a),
-	game_event(), episode_holder(), wind_surf(SDL_GetWindowSurface(window)), quit(false), on_work(false),end_scene(false) {}
+	game_event(), episode_holder(), wind_surf(SDL_GetWindowSurface(window)), quit(false), on_work(false),end_scene(false),
+	values_holder(), characters() {}
 
 
 
@@ -60,13 +59,13 @@ Episode* Game_Engine::New_episode(const char* name_a)
 void Game_Engine::Start()//старт игры
 {
 
-	if (episode_holder.size() != 0 && *episode_holder.begin() != nullptr)
+	if (episode_holder.size() != 0 && *episode_holder.begin() != nullptr)//ATTENTION СПИСОК ЭПИЗОДОВ МОЖЕТ БЫТЬ ПУСТ
 	{
 		Episode* curr_episode = *episode_holder.begin();//начинаем с первого эпизода в списке эпизодов
 		Scene* null_scene = curr_episode->Add_scene("null_scene");// добавляем нулевую сцену, на которую по дефолту ссылаются все сцены
-
+		null_scene->Add_Clicker();
 		Scene* curr_scene = *curr_episode->get_scene_v()->begin();//начинаем с первой сцены первого эпизода
-
+		//ATTENTON СПИСОК СЦЕН МОЖЕТ БЫТЬ ПУСТ
 		while (!quit)//пока пользователь не выйдет из игры будем вызывать обработчик сцены
 		{
 			curr_scene = Hold_Scene(curr_episode, curr_scene);
@@ -116,15 +115,15 @@ Episode* Game_Engine::Hold_Episode(Episode *curr_episode)
 
 Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 {
-	if (!curr_scene) { return 0; }// проверяем што указатель не сломан
-	std::cout << curr_scene->get_name() << " is on action" << "\n";//выводим название воспроизводимой сцены
+	if (!curr_scene) { return 0; }//ATTENTION С УКАЗАТЕЛЕМ МОЖЕТ БЫТЬ ШТО-ТО НЕ ТО
+	std::cout << curr_scene->get_name() << " is on action" << "\n";//ATTENTION МОЖЕТ БЫТЬ ТАК ШТО ИМЕНИ НЕТ
 	curr_scene->Next_Scene(*(--curr_episode->get_scene_v()->end()));// добавляем дефолтный указатель на следующую сцену
-
-	if (curr_scene->get_scene_images().size() != 0)
+     
+	if (curr_scene->get_scene_images().size() != 0)//ATTENTION СПИСОК КАРТИНОК МОЖЕТ БЫТЬ ПУСТ
 	{
 		for (auto it = curr_scene->get_scene_images().begin(); it != curr_scene->get_scene_images().end(); ++it)
 		{
-			if ((*it) != nullptr)
+			if ((*it) != nullptr)//ATTETION ИТЕРАТОР МОЖЕТ СЛУЧАЙНО УКАЗАТЬ НА ПУСТУЮ КАРТИНКУ
 			{
 				(*it)->Load();//загружаем картинки, объявленные в сцене
 			}
@@ -136,12 +135,12 @@ Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 
 	if (!quit)
 	{
-		std::cout << "next scene: " << curr_scene->get_next_scene()->get_name() << "\n";
+		std::cout << "next scene: " << curr_scene->get_next_scene()->get_name() << "\n";//ATTETION С УКАЗАТЕЛЕМ НА СЛЕДУЮЩУЮ СЦЕНУ МОГУТ ВОЗНИКНУТЬ ПРОБЛЕМЫ
 	}
 
 
-	curr_scene->change_alp(curr_scene->actions.end());
-	return curr_scene->get_next_scene();
+	curr_scene->change_alp(curr_scene->actions.end());//ATTENTION ПРОВЕРКА УКАЗАТЕЛЯ
+	return curr_scene->get_next_scene();//ATTENTION НУЖНО ПРОВЕРИТЬ УКАЗАТЕЛЬ НА СЛЕДУЮЩИЙ ЭПИЗОД
 
 
 }
@@ -156,7 +155,7 @@ void Game_Engine::Action_Holder(Scene* curr_scene)
 	for (auto it = curr_scene->get_actions().begin(); it != curr_scene->get_actions().end(); ++it)
 	{	// реализовываем все action до тех пор пока они не кончатся или не сработает next_scene
 
-			curr_scene->change_alp(++it);
+			curr_scene->change_alp(++it);//ATTENTION НУЖНО ПОСМОТРЕТЬ ШТО ИТЕРАТОР НЕ УКАЗЫВАЕТ НА КОНЕЦ СПИСКА
 			--it;
 
 		if (!end_scene)
@@ -164,6 +163,8 @@ void Game_Engine::Action_Holder(Scene* curr_scene)
 			on_work = true;
 			while (on_work)// блок обработки событий
 			{
+				SDL_PushEvent(&NULL_EVENT);
+
 				while (SDL_PollEvent(&game_event) != 0)
 				{
 					if (game_event.type == SDL_QUIT)
@@ -175,7 +176,8 @@ void Game_Engine::Action_Holder(Scene* curr_scene)
 					}
 					if (game_event.type == (*it).get_trigger())
 					{
-						EngineInstruction inst = (*it).do_action(characters, values_holder, curr_scene, game_event);
+						ActionValues act_val(&characters, &values_holder, curr_scene, game_event);
+						EngineInstruction inst = (*it).do_action(act_val);
 						if (inst.get_command() == "stop_scene")
 						{
 							end_scene = true;

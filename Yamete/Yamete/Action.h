@@ -2,6 +2,26 @@
 class Game_Engine;
 class Scene;
 
+SDL_Event NULL_EVENT;
+
+
+struct ActionValues
+{
+	Characters* characters;
+	ValuesHolder* values_holder;
+	Scene* this_scene;
+	SDL_Event event;
+
+	ActionValues(Characters* characters_a, ValuesHolder* vh_a, Scene* sc, SDL_Event event_a):
+		characters(characters_a), values_holder(vh_a), this_scene(sc), event(event_a)
+	{
+
+	}
+}; 
+
+
+
+
 class EngineInstruction
 {
 private:
@@ -17,31 +37,36 @@ public:
 
 };
 
+
+
 class Action
 {
 private:
-	std::function<EngineInstruction(Characters& , ValuesHolder& , Scene* , SDL_Event)> action;
-	SDL_EventType trigger;
-	std::list<Action>::iterator list_pos;
+	std::function<EngineInstruction(ActionValues&)> action;
+	Uint32 trigger;
+
 
 public:
-	Action(SDL_EventType trigger_a,  std::function<EngineInstruction(Characters&, ValuesHolder&, Scene*, SDL_Event)> action_a = [](Characters& a, ValuesHolder& b, Scene* c, SDL_Event d) -> EngineInstruction {})
+	Action(Uint32 trigger_a,  std::function<EngineInstruction(ActionValues&)> action_a = [](ActionValues& act) -> EngineInstruction {})
 		: action(action_a), trigger(trigger_a) {}
 		 
 	
-	SDL_EventType get_trigger()
+	Uint32 get_trigger()
 	{
 		return trigger;
 	}
 
 
-	EngineInstruction do_action(Characters& a, ValuesHolder& b, Scene* c, SDL_Event d)
+	virtual EngineInstruction do_action(ActionValues& act_val)
 	{
-		return action(a, b, c, d);
+		return action(act_val);
 	}
 
 
 };
+
+
+
 
 class PermAction
 {
