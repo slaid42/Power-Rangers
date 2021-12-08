@@ -4,6 +4,7 @@
 #include <SDL_timer.h>
 #include <SDL_image.h>
 #include "SDL_ttf.h"
+#include <SDL_mixer.h>
 class Image// êëàññ êàðòèíêè
 {
 private:
@@ -20,26 +21,37 @@ public:
 		directive = nullptr;
 		key = nullptr;
 	}
-	Image(char* key, char* dir, int x_a, int y_a) : key(key), directive(dir),
-		x(x_a), y(y_a)
+	Image(char* key, char* dir, int x_a, int y_a, int w, int h) : key(key), directive(dir),
+		x(x_a), y(y_a), w(w), h(h)
 	{
 
 	}
 
-	Image* operator=(const Image& other) {
+	Image& operator=(const Image& other) {
 		surf = other.surf;
 		x = other.x;
 		y = other.y;
 		directive = other.directive;
 		key = other.key;
+		return *this;
 	}
-	Image* operator=(Image& other) {
+
+    void DrawImg(Image img, SDL_Surface* scr){
+        SDL_Rect dest;
+        dest.x = x;
+        dest.y = y;
+        SDL_BlitSurface(img.surf, NULL, scr, &dest);
+    }
+
+
+	Image& operator=(Image& other) {
 		surf = other.surf;
 		x = other.x;
 		y = other.y;
 		directive = other.directive;
 		key = other.key;
 		other.surf = nullptr;
+		return *this;
 	}
 	void Load()
 	{
@@ -98,15 +110,16 @@ public:
 
 	}
 
-	Game_text* operator=(const Game_text& other) {
+	Game_text& operator=(const Game_text& other) {
 		surf = other.surf;
 		x = other.x;
 		y = other.y;
 		w = other.w;
 		h = other.h;
 		key = other.key;
+		return *this;
 	}
-	Game_text* operator=(Game_text& other) {
+	Game_text& operator=(Game_text& other) {
 		surf = other.surf;
 		x = other.x;
 		y = other.y;
@@ -114,6 +127,7 @@ public:
 		h = other.h;
 		key = other.key;
 		other.surf = nullptr;
+		return *this;
 	}
 
 	~Game_text()
