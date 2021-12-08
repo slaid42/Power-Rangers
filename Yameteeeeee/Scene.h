@@ -27,6 +27,39 @@ char* CharSlipt(const char* content, int l, int r) {
     return res;
 }
 
+void DrawSimpleButton(SDL_Surface* screen, int x, int y, int w, int h, const char* text, const char* font, int siz, int red, int green, int blue, int bred, int bgreen, int bblue){
+    SDL_Rect dest;
+    dest.x = x;
+    dest.y = y;
+    dest.w = w;
+    dest.h = h;
+    SDL_FillRect(screen, &dest, SDL_MapRGB(screen->format, bred, bgreen, bblue));
+    dest.x += siz/10;
+    dest.y += siz/10;
+    SDL_Color clr;
+    clr.r = red;
+    clr.g = green;
+    clr.b = blue;
+    PrintText(screen, text, font, siz, clr, dest);
+}
+
+void DrawImageButton(SDL_Surface* screen, SDL_Surface* img, int x, int y, int w, int h, const char* text, const char* font, int siz, int red, int green, int blue){
+    SDL_Rect dest;
+    dest.x = x;
+    dest.y = y;
+    dest.w = w;
+    dest.h = h;
+    //(SDL_Surface *img, int x, int y, SDL_Surface *screen)
+    DrawImg(img, x, y, w, h, screen);
+    dest.x += siz/10;
+    dest.y += siz/10;
+    SDL_Color clr;
+    clr.r = red;
+    clr.g = green;
+    clr.b = blue;
+    PrintText(screen, text, font, siz, clr, dest);
+}
+
 
 class Scene
 {
@@ -74,7 +107,6 @@ void Add_text(SDL_Surface* screen ,const char* content, const char* font, int si
     for(uint16_t i=0; i <= s.size()*siz/screen_w; i++){
         char* text = CharSlipt(content, i*screen_w, (1+i)*screen_w);
         TTF_Font *fnt = TTF_OpenFont(font, siz);
-        //std::cout << text << std::endl;
         SDL_Surface *sText = TTF_RenderText_Blended(fnt, text, color);
         SDL_Rect dest;
         dest.w = w;

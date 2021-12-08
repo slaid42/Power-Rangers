@@ -36,12 +36,15 @@ public:
 		return *this;
 	}
 
-    void DrawImg(Image img, SDL_Surface* scr){
+    void DrawImg(SDL_Surface* scr){
         SDL_Rect dest;
         dest.x = x;
         dest.y = y;
-        SDL_BlitSurface(img.surf, NULL, scr, &dest);
+        dest.w = w;
+        dest.h = h;
+        SDL_BlitScaled(surf, NULL, scr, &dest);
     }
+
 
 
 	Image& operator=(Image& other) {
