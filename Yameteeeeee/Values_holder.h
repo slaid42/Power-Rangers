@@ -17,7 +17,7 @@ public:
 	virtual void AddValue(const char* v_name, T val) {
 		h.AddValue(v_name, val);
 	}
-	virtual auto FindValue(const char* v_name) {
+	auto FindValue(const char* v_name) {
 		return h.FindValue(v_name);
 	}
 	virtual void ChangeValue(const char* v_name, T val) {
