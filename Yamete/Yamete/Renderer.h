@@ -10,20 +10,17 @@ public:
 		dest.y = y;
 		SDL_BlitSurface(img, NULL, screen, &dest);
 	}
-	void Update(SDL_Surface* wind_surf, SDL_Renderer* rend, std::vector<Image*> Surfaces_on_act)
+	void Update(SDL_Surface* wind_surf, SDL_Window* window, std::vector<Image*>& imgvec, std::vector<Game_text*>& textvec, SDL_Renderer* render)
 	{
-		SDL_RenderClear(rend);
-		if (Surfaces_on_act.size() != 0)
-		{
-			for (auto it = Surfaces_on_act.begin(); it != Surfaces_on_act.end(); ++it)
-			{
-				if (*it)
-				{
-					Draw((*it)->get_surf(), (*it)->get_x(), (*it)->get_y(), wind_surf);
-				}
-			}
-		}
-		SDL_RenderPresent(rend);
+        SDL_FreeSurface(wind_surf);
+        for(auto it = imgvec.begin(); it != imgvec.end(); ++it){
+            (*it)->DrawImg(wind_surf);
+        }
+        for(auto it = textvec.begin(); it != textvec.end(); ++it){
+            (*it)->DrawImg(wind_surf);
+        }
+        //SDL_RenderClear(render);
+        SDL_UpdateWindowSurface(window);
 	}
 };
 
@@ -50,10 +47,10 @@ public:
 	int x, y;
 	char* directive;
 	char* key;
-	
+
 
 	Image_atribute(char* key, char* dir,  int x_a, int y_a): key(key), directive(dir),
-	x(x_a), y(y_a) 
+	x(x_a), y(y_a)
 	{
 		surf = IMG_Load(directive);
 

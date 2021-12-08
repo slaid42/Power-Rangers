@@ -131,6 +131,11 @@ public:
 		return scene_images;
 	}
 
+    std::vector<Game_text*>& get_scene_texts()
+	{
+		return scene_texts;
+	}
+
 	Episode* get_my_episode()
 	{
 		return my_episode;
@@ -169,6 +174,5 @@ void Scene::Add_text(SDL_Surface* screen ,const char* content, const char* font,
 
 void Scene::Add_image(char* id_name, char* direction, int& x_a, int& y_a, int& w, int& h)
 {
-
 	scene_images.push_back(new Image(id_name, direction, x_a, y_a, w, h));
 }

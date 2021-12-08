@@ -9,10 +9,8 @@ private:
 
 	SDL_Event game_event;
 	SDL_Window* window;
-	SDL_Surface* wind_surf;
-	SDL_Renderer* sdl_renderer;
+    Renderer* renderer;
 	std::list<Episode*> episode_holder;//тут храним эпизоды
-	Renderer* renderer;
 	bool quit;
 	bool on_work;
 	bool end_scene;
@@ -24,6 +22,8 @@ private:
 
 	void Action_Holder(Episode* curr_episode, Scene* curr_scene);
 public:
+    SDL_Surface* wind_surf;
+	SDL_Renderer* sdl_renderer;
 	friend EngineInstruction;
 
 	Characters characters;
@@ -48,7 +48,7 @@ Game_Engine::Game_Engine(SDL_Window* window_a, SDL_Renderer* render_a, Renderer*
 
 
 
-Episode* Game_Engine::New_episode(const char* name_a)                                                                                                                          
+Episode* Game_Engine::New_episode(const char* name_a)
 {
 	Episode* helper = new Episode(name_a);
 	episode_holder.push_back(helper);
@@ -102,7 +102,7 @@ Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 	if (!curr_scene) { return 0; }//ATTENTION С УКАЗАТЕЛЕМ МОЖЕТ БЫТЬ ШТО-ТО НЕ ТО
 	std::cout << curr_scene->get_name() << " is on action" << "\n";//ATTENTION МОЖЕТ БЫТЬ ТАК ШТО ИМЕНИ НЕТ
 	curr_scene->Next_Scene(*(--curr_episode->get_scene_v()->end()));// добавляем дефолтный указатель на следующую сцену
-     
+
 	if (curr_scene->get_scene_images().size() != 0)//ATTENTION СПИСОК КАРТИНОК МОЖЕТ БЫТЬ ПУСТ
 	{
 		for (auto it = curr_scene->get_scene_images().begin(); it != curr_scene->get_scene_images().end(); ++it)
@@ -175,7 +175,7 @@ void Game_Engine::Action_Holder(Episode* curr_episode,  Scene* curr_scene)
 
 					for (auto it_2 = curr_episode->get_perm_actions().begin(); it_2 != curr_episode->get_perm_actions().end(); ++it_2)
 					{
-							
+
 							if (game_event.type == it_2->get_trigger())
 							{
 								EngineInstruction inst2 = it_2->do_action(*this, game_event);
@@ -183,14 +183,14 @@ void Game_Engine::Action_Holder(Episode* curr_episode,  Scene* curr_scene)
 							}
 					}
 
-					
+
 				}
 
-				renderer->Update(wind_surf, sdl_renderer, curr_scene->get_scene_images());// рендер обновляет экран
+				renderer->Update(wind_surf, window, curr_scene->get_scene_images(),curr_scene->get_scene_texts(), sdl_renderer);// рендер обновляет экран
 			}
 		}
 		else
-		{	
+		{
 
 			break;
 		}
