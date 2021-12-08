@@ -3,18 +3,37 @@
 #include "Graphics.h"
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL.h>
 #include <SDL_timer.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
 #include "SDL_ttf.h"
 
-char* CharSlipt(char* content, int l, int r){
-    char* res = new char[r-l];
-    for(int i = 0; i < (r-l); i++){
-        res[i] = content[l+i];
+char* CharSlipt(const char* content, int l, int r){
+    /*
+    int siz = 0;
+    if(content = NULL){
+        return nullptr;
     }
+    else{
+        const char* contentptr = &content[0];
+        char* rptr;
+
+        if(*rptr == NULL){
+            while(*contentptr == NULL){
+                contentptr++;
+                siz++;
+            }
+            r = siz;
+        }
+*/
+        char* res = new char[r-l];
+        for(int i = 0; i < (r-l); i++){
+            res[i] = content[l+i];
+        }
     return res;
 }
+
 
 class Scene
 {
@@ -57,9 +76,9 @@ void Scene::Add_Background(char* id_name, char* direction, int screen_w, int scr
     scene_images.push_back(new Image(id_name, direction, 0, 0, screen_w, screen_h));
 }
 
-void Scene::Add_text(char* id_name, char* content, const char* font, int size, SDL_Color color, int& x, int& y, int& w, int& h, int screen_w){
+void Scene::Add_text(const char* content, const char* font, int size, SDL_Color color, int& x, int& y, int& w, int& h, int screen_w){
     SDL_Surface *sDest;
-    for(uint16_t i=0; i++; i <= sizeof(content)*size/screen_w){
+    for(uint16_t i=0; i <= sizeof(content)*size/screen_w; i++ ){
         char* text = CharSlipt(content, i*screen_w, (1+i)*screen_w);
         TTF_Font *fnt = TTF_OpenFont(font, size);
         SDL_Surface *sText = TTF_RenderText_Blended(fnt, text, color);
@@ -78,5 +97,9 @@ void Scene::Add_image(char* id_name, char* direction, int& x_a, int& y_a, int& w
 {
 
 	scene_images.push_back(new Image(id_name, direction, x_a, y_a, w, h));
+}
+
+void DrawTextWindow(SDL_Color color, int& x, int& y, int& w, int& h){
+    SDL_Surface* surf = SDL_CreateRGBSurface(0,w,h,32,0,0,0,0);
 }
 
