@@ -112,12 +112,3 @@ public:
 		m.erase(v_name);
 	}
 };
-
-
-int main() {
-	Value v(10);
-	ValuesHolder h;
-	h.AddValue("v", v);
-	Value v1 = h.FindValue("v");
-	std::cout << v1.GetInt();
-}
