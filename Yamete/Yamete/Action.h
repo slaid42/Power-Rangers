@@ -71,25 +71,25 @@ public:
 class PermAction
 {
 private:
-	std::function<EngineInstruction(Game_Engine&)> action;
-	SDL_EventType trigger;
+	std::function<EngineInstruction(Game_Engine&, SDL_Event)> action;
+	Uint32 trigger;
 public:
-	PermAction(SDL_EventType trigger_a, std::function<EngineInstruction(Game_Engine&)> action_a = [](Game_Engine& arg) -> EngineInstruction {}): trigger(trigger_a), action(action_a)
+	PermAction(Uint32 trigger_a, std::function<EngineInstruction(Game_Engine&, SDL_Event event)> action_a = [](Game_Engine& arg, SDL_Event ev) -> EngineInstruction {}): trigger(trigger_a), action(action_a)
 	{
 
 	}
-	SDL_EventType get_trigger()
+	Uint32 get_trigger()
 	{
 		return trigger;
 	}
 
-	std::function<void(Game_Engine&)> get_action()
+	std::function<void(Game_Engine&, SDL_Event)> get_action()
 	{
 		return action;
 	}
-	EngineInstruction do_action(Game_Engine& eng)
+	EngineInstruction do_action(Game_Engine& eng, SDL_Event ev)
 	{
-		return action(eng);
+		return action(eng, ev);
 	}
 
 };

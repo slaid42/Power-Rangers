@@ -1,4 +1,6 @@
 #pragma once
+
+class Episode;
 class Scene 
 {
 private:
@@ -7,6 +9,7 @@ private:
 	std::vector<Game_text> scene_texts;
 	std::list<Action> actions;
 	std::list<Action>::iterator action_list_pos;
+	Episode* my_episode;
 	Scene* next_scene;
 	Audio music;
 	const char* name;
@@ -16,9 +19,17 @@ private:
 		action_list_pos = arg;
 	}
 
+	void change_my_episode(Episode* epi)
+	{
+		my_episode = epi;
+
+
+	}
+
 public:
 
 	friend Game_Engine;
+	friend Episode;
 
 	Scene(const char* name_a);
 
@@ -120,7 +131,10 @@ public:
 		return scene_images;
 	}
 	
-
+	Episode* get_my_episode()
+	{
+		return my_episode;
+	}
 };
 
 

@@ -20,9 +20,9 @@ private:
 
 	Scene* Hold_Scene(Episode* cur_episode, Scene* curr_scene);//реализация сцены
 
-	Episode* Hold_Episode(Episode* curr_episode);//реализация эпизода
+	void Hold_Episode(Episode* curr_episode);//реализация эпизода
 
-	void Action_Holder(Scene* curr_scene);
+	void Action_Holder(Episode* curr_episode, Scene* curr_scene);
 public:
 	friend EngineInstruction;
 
@@ -62,13 +62,17 @@ void Game_Engine::Start()//старт игры
 	if (episode_holder.size() != 0 && *episode_holder.begin() != nullptr)//ATTENTION СПИСОК ЭПИЗОДОВ МОЖЕТ БЫТЬ ПУСТ
 	{
 		Episode* curr_episode = *episode_holder.begin();//начинаем с первого эпизода в списке эпизодов
-		Scene* null_scene = curr_episode->Add_scene("null_scene");// добавляем нулевую сцену, на которую по дефолту ссылаются все сцены
-		null_scene->Add_Clicker();
+		Hold_Episode(curr_episode);
 		Scene* curr_scene = *curr_episode->get_scene_v()->begin();//начинаем с первой сцены первого эпизода
 		//ATTENTON СПИСОК СЦЕН МОЖЕТ БЫТЬ ПУСТ
 		while (!quit)//пока пользователь не выйдет из игры будем вызывать обработчик сцены
 		{
 			curr_scene = Hold_Scene(curr_episode, curr_scene);
+			if (curr_scene->get_my_episode() != curr_episode)
+			{
+				curr_episode = curr_scene->get_my_episode();
+				Hold_Episode(curr_episode);
+			}
 		}
 	}
 	else
@@ -77,37 +81,17 @@ void Game_Engine::Start()//старт игры
 	}
 
 }
-Episode* Game_Engine::Hold_Episode(Episode *curr_episode)
+void Game_Engine::Hold_Episode(Episode *curr_episode)
 {
-	if (curr_episode)
-	{	
-		std::cout << curr_episode->get_name() << " is on action" << "\n";
-		if (curr_episode->get_scene_v()->size() != 0)
-		{
-			for (auto scene_iter = curr_episode->get_scene_v()->begin(); scene_iter != curr_episode->get_scene_v()->end(); ++scene_iter)
-			{
-				if (*scene_iter)
-				{
-					Hold_Scene(curr_episode, *scene_iter);//пока што вызываем все сцены по очереди из списка сцен эпизода
-				}
-				if (quit)
-				{
-					break;
-				}
-			}
-		}
-		if (quit)
-		{
-			return nullptr;
-		}
-		if (curr_episode->get_next_episode())
-		{
-			return curr_episode->get_next_episode();
-		}
-		else
-		{
-			return nullptr;
-		}
+	if(curr_episode)
+	{
+		Scene* null_scene = curr_episode->Add_scene("null_scene");// добавляем нулевую сцену, на которую по дефолту ссылаются все сцены
+		null_scene->Add_Clicker();
+		std::cout << curr_episode->get_name() << " is in run" << "\n";
+	}
+	else
+	{
+		std::cerr << "bad episode pointer";
 	}
 }
 
@@ -130,7 +114,7 @@ Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 		}
 	}
 
-	Action_Holder(curr_scene);
+	Action_Holder(curr_episode, curr_scene);
 
 
 	if (!quit)
@@ -146,7 +130,7 @@ Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 }
 
 
-void Game_Engine::Action_Holder(Scene* curr_scene)
+void Game_Engine::Action_Holder(Episode* curr_episode,  Scene* curr_scene)
 {
 
 	on_work = true;// пока переменная тру, будет происходить обработка action
@@ -187,8 +171,19 @@ void Game_Engine::Action_Holder(Scene* curr_scene)
 						{
 							on_work = false;
 						}
-
 					}
+
+					for (auto it_2 = curr_episode->get_perm_actions().begin(); it_2 != curr_episode->get_perm_actions().end(); ++it_2)
+					{
+							
+							if (game_event.type == it_2->get_trigger())
+							{
+								EngineInstruction inst2 = it_2->do_action(*this, game_event);
+
+							}
+					}
+
+					
 				}
 
 				renderer->Update(wind_surf, sdl_renderer, curr_scene->get_scene_images());// рендер обновляет экран

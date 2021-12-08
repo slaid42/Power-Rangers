@@ -76,8 +76,17 @@ void GameProcess(Game_Engine* engine)
 
     engine->values_holder.Add("sc3_has_been_seen", 0);
 
-    Scene* sc4 = ep0->Add_scene("sc4");
+    ep0->AddPermAction(SDL_KEYDOWN, [](Game_Engine& eng, SDL_Event ev)->EngineInstruction {
+        if (ev.key.keysym.sym == SDLK_UP)
+        {
+            std::cout << "Yamete kudasai!!!!~~~" << "\n";
+            return EngineInstruction("nothing");
+        }
 
+        });
+
+    Episode* ep1 = engine->New_episode("ep1");
+    Scene* sc4 = ep1->Add_scene("sc4");
     sc1->Add_Choice(sc2, sc3);
     sc2->Add_Script(
         [sc1, sc4](ActionValues& val)->EngineInstruction
@@ -101,6 +110,7 @@ void GameProcess(Game_Engine* engine)
             return EngineInstruction("continue");
         }
     );
+
     sc3->Next_Scene(sc4);
 
 }
