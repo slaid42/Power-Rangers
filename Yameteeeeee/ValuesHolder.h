@@ -25,7 +25,6 @@ public:
 	}
 	virtual void DeleteValue(const char* v_name) {
 		h.DeleteValue(v_name);
-		m.erase(v_name);
 	}
 	~ValueHolder() = default;
 };
