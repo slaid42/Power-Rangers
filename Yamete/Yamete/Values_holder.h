@@ -125,19 +125,16 @@ public:
 		}
 		in.close();
 	}
-	void Write() {
-		std::ofstream out(directive);
-		if (out.is_open())
-		{
-			out << "Welcome to CPP" << std::endl;
-		}
-
-		for (auto i = m.begin(); i != m.end(); ++i) {
-			if (((*i).second).Type() == "int") {
-				out << "int" << " " << (*i).first << " " << ((*i).second).GetInt() << std::endl;
-			}
-			if (((*i).second).Type() == "string") {
-				out << "string" << " " << (*i).first << " " << ((*i).second).GetString() << std::endl;
+	void Write(const char* _directive) {
+		std::ofstream out(_directive);
+		if (out.is_open()) {
+			for (auto i = m.begin(); i != m.end(); ++i) {
+				if (((*i).second).Type() == "int") {
+					out << "int" << " " << (*i).first << " " << ((*i).second).GetInt() << std::endl;
+				}
+				if (((*i).second).Type() == "string") {
+					out << "string" << " " << (*i).first << " " << ((*i).second).GetString() << std::endl;
+				}
 			}
 		}
 		out.close();
