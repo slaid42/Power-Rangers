@@ -10,17 +10,39 @@ public:
 		dest.y = y;
 		SDL_BlitSurface(img, NULL, screen, &dest);
 	}
-	void Update(SDL_Surface* wind_surf, SDL_Window* window, std::vector<Image*>& imgvec, std::vector<Game_text*>& textvec, SDL_Renderer* render)
+	void Update(SDL_Surface* wind_surf, SDL_Window* window, std::vector<Image*>& imgvec, std::vector<Game_text*>& textvec, SDL_Renderer* render, int scrw, int scrh)
 	{
-        SDL_FreeSurface(wind_surf);
+
+
         for(auto it = imgvec.begin(); it != imgvec.end(); ++it){
             (*it)->DrawImg(wind_surf);
         }
+
         for(auto it = textvec.begin(); it != textvec.end(); ++it){
-            (*it)->DrawImg(wind_surf);
+            (*it)->DrawText(wind_surf);
         }
-        //SDL_RenderClear(render);
+        SDL_Texture* tex = SDL_CreateTextureFromSurface(render, wind_surf);
+
+        if (tex == NULL) {
+            std::cout << "Can't create texture from surface: " << SDL_GetError() << std::endl;
+    }
         SDL_UpdateWindowSurface(window);
+        SDL_FreeSurface(wind_surf);
+        SDL_RenderClear(render);
+
+
+        SDL_Rect dest;
+        dest.x = 0;
+        dest.y = 0;
+
+        SDL_RenderClear(render);
+        SDL_RenderCopy(render, tex, NULL, NULL);
+        SDL_RenderPresent(render);
+        SDL_DestroyTexture(tex);
+        SDL_Delay(1000 / 60);
+
+        SDL_Rect dest1 = {0, 0, scrw, scrh};
+
 	}
 };
 

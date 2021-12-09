@@ -37,7 +37,6 @@ char* CharSlipt(const char* content, int l, int r) {
     int len = min((r - l - 1),(s.size() - l - 1));
     char* res = new char[len];
     strcpy(res, subs.c_str());
-    std::cout << res << std::endl;
     return res;
 }
 
@@ -163,10 +162,15 @@ private:
 
 	int x, y;
 	int w, h;
+	int siz;
 	char* key;
-	SDL_Surface* surf;
-
+	const char* font;
+	const char* content;
+	SDL_Color clr;
+	int scrw;
 public:
+
+	SDL_Surface* surf;
 
 	Game_text() {
 		surf = nullptr;
@@ -176,8 +180,8 @@ public:
 		h = 0;
 		key = nullptr;
 	}
-	Game_text(char* key, int& x_a, int& y_a, int& w, int& h, SDL_Surface* surf) : key(key),
-		x(x_a), y(y_a), w(w), h(h), surf(surf)
+	Game_text(char* key, int x_a, int y_a, int w, int h, const char* content, const char* font, SDL_Color clr, int scrw) : key(key),
+		x(x_a), y(y_a), w(w), h(h), content(content), font(font), clr(clr), scrw(scrw)
 	{
 
 	}
@@ -198,9 +202,24 @@ public:
 		w = other.w;
 		h = other.h;
 		key = other.key;
-		other.surf = nullptr;
 		return *this;
 	}
+
+void DrawText(SDL_Surface* surf){
+    std::string s(content);
+    for(uint16_t i=0; i <= s.size()*siz/scrw; i++){
+        char* text = CharSlipt(content, i*scrw, (1+i)*scrw);
+        TTF_Font *fnt = TTF_OpenFont(font, siz);
+        SDL_Surface *sText = TTF_RenderText_Blended(fnt, text, clr);
+        SDL_Rect dest;
+        dest.w = w;
+        dest.h = h;
+        dest.x = x;
+        dest.y = y;
+        SDL_BlitSurface(sText, NULL, surf, &dest);
+        y+=siz;
+    }
+}
 
 	~Game_text()
 	{

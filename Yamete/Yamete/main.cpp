@@ -10,6 +10,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "Options.h"
 #include "Graphics.h"
@@ -71,18 +72,27 @@ void GameProcess(Game_Engine* engine)
 {
     Episode* ep0 = engine->New_episode("ep0");
     Scene* sc1 = ep0->Add_scene("sc1");
-    Image sc1im;
-    SDL_Color clr = {255,50,40,0};
-    int a = 15;
-    int b = 50;
-    int c = 100;
-    int d = 53;
-    int e = 250;
-    sc1->Add_text(engine->wind_surf ,"AAAAAAAAAAAAAA", "Pacifico.ttf", a, clr, b, c, d, d, e);
+    SDL_Color clr = {255,100,100,0};
+    int a = 50;
+    int h = 0;
+    int w = 0;
+    int x = 100;
+    int y = 100;
+    int scr = 100;
+    int siz = 15;
+    int scrwidth = 50;
+    SDL_Rect asd;
+    asd.h =h;
+    asd.w = w;
+    asd.x = x;
+    asd.y = y;
     sc1->Add_Background("Lol", "BtT7h9_WXSs.jpg", 800, 450);
-    sc1->Add_image("Khm", "BtT7h9_WXSs.jpg", a, b, c, e);
+    sc1->Add_image("Lol1","BtT7h9_WXSs.jpg", a, a, a, a );
+    sc1->Add_text("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Pacifico.ttf", siz, clr, 50, 50, 50, 50, 15);
     Scene* sc2 = ep0->Add_scene("sc2");
     sc2->Add_Clicker();
+    sc2->Add_Background("Lol", "Z_fcbb35b5.jpg", 800, 450);
+    sc2->Add_text("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Pacifico.ttf", siz, clr, 50, 50, 50, 50, 15);
     Scene* sc3 = ep0->Add_scene("sc3");
 
     engine->values_holder.Add("sc3_has_been_seen", 0);

@@ -112,6 +112,14 @@ Scene* Game_Engine::Hold_Scene(Episode* curr_episode, Scene* curr_scene)
 				(*it)->Load();//загружаем картинки, объявленные в сцене
 			}
 		}
+
+		for (auto it = curr_scene->get_scene_texts().begin(); it != curr_scene->get_scene_texts().end(); ++it)
+		{
+			if ((*it) != nullptr)//ATTETION ИТЕРАТОР МОЖЕТ СЛУЧАЙНО УКАЗАТЬ НА ПУСТУЮ КАРТИНКУ
+			{
+				//DrawText();
+			}
+		}
 	}
 
 	Action_Holder(curr_episode, curr_scene);
@@ -147,8 +155,9 @@ void Game_Engine::Action_Holder(Episode* curr_episode,  Scene* curr_scene)
 			on_work = true;
 			while (on_work)// блок обработки событий
 			{
-				SDL_PushEvent(&NULL_EVENT);
 
+				SDL_PushEvent(&NULL_EVENT);
+                renderer->Update(wind_surf, window, curr_scene->get_scene_images(),curr_scene->get_scene_texts(), sdl_renderer, 800, 450);// рендер обновляет экран
 				while (SDL_PollEvent(&game_event) != 0)
 				{
 					if (game_event.type == SDL_QUIT)
@@ -185,8 +194,6 @@ void Game_Engine::Action_Holder(Episode* curr_episode,  Scene* curr_scene)
 
 
 				}
-
-				renderer->Update(wind_surf, window, curr_scene->get_scene_images(),curr_scene->get_scene_texts(), sdl_renderer);// рендер обновляет экран
 			}
 		}
 		else
